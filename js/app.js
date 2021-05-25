@@ -1,13 +1,28 @@
-const chooseCathegory = document.getElementById('choose-cathegory');
-const categoryWrapper = document.getElementById('category-wrapper');
-const listCathegoryItem = document.querySelectorAll('.list__cathegory-item');
 const addListBtn = document.getElementById('add_list');
 const clearList = document.getElementById('clear-list');
-const listArray = JSON.parse(localStorage.getItem('listArray')) || [];
+
+addListBtn.addEventListener('click', function(){
+    
+    const listArray = JSON.parse(localStorage.getItem('listArray')) || [];
+    const addListFieldValue = document.getElementById('add-list__field').value;    
+    const checkingMatches = JSON.parse(localStorage.getItem('listArray'));
+
+    if(checkingMatches !== null && checkingMatches.includes(addListFieldValue)){
+        alert("Come up with something original;")
+    }else{
+
+        listArray.push(addListFieldValue);
+        localStorage.setItem('listArray', JSON.stringify(listArray));
+        listCreator();        
+    }
+
+});
+
 
 function listCreator(){
 
     let itemsArray = JSON.parse(localStorage.getItem('listArray'));
+
     let listItemContent = "";
     for (item in itemsArray) {
         listItemContent +=
@@ -24,22 +39,7 @@ function listCreator(){
     document.getElementById("list-item__wrapper").innerHTML = listItemContent;
 }
 
-addListBtn.addEventListener('click', function(){
 
-    let addListFieldValue = document.getElementById('add-list__field').value;
-    const retrievedData = localStorage.getItem("favoriteItems");
-    let checkForMatches = JSON.parse(localStorage.getItem('listArray'));
-
-    if(checkForMatches !== null && checkForMatches.includes(addListFieldValue)){
-        alert("Come up with something original;")
-    }else{
-
-        listArray.push(addListFieldValue);
-        localStorage.setItem('listArray', JSON.stringify(listArray));
-        listCreator();
-    }
-
-});
 
 window.addEventListener('load', listCreator())
 
@@ -54,12 +54,11 @@ clearList.addEventListener('click', function(){
 
 /*** Remove Item from List ***/
 
-window.onload = function(){
     let removeItem = document.querySelectorAll('.remover');
 
     removeItem.forEach(item=>{
         item.addEventListener('click', function(){
-            this.closest('.list-item').style.display='none';
+            this.closest('.list-item').remove();
             let dataItem =  this.getAttribute('data-item');
             let existingEntries = JSON.parse(localStorage.getItem('listArray'));
             existingEntries.splice(dataItem, 1)
@@ -69,34 +68,16 @@ window.onload = function(){
             localStorage.setItem("completArray",JSON.stringify(completArray));
         });
     
-    });  
-}
+    }); 
 
 
-/*** Mark as Complete ***/
 
-let markComplet = document.querySelectorAll('.list-item__content');
-const completArray = JSON.parse(localStorage.getItem('completArray')) || [];
 
-markComplet.forEach(item=>{
 
-    item.addEventListener('click', function(){
-        let dataItem =  this.getAttribute('data-item');
-        completArray.push(dataItem);
-        localStorage.setItem('completArray', JSON.stringify(completArray));
-        addCompletLine();
-    });
 
-    function addCompletLine(){
-        let dataItem =  item.getAttribute('data-item');
-        if(completArray.includes(String(dataItem))){
-            item.classList.add('active')
-        }
-    }
-    
-    window.addEventListener('load', addCompletLine())
-    
-});
+
+
+
 
 
 
