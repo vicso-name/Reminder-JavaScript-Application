@@ -1,3 +1,4 @@
+
 const addListBtn = document.getElementById('add_list');
 const clearList = document.getElementById('clear-list');
 
@@ -24,7 +25,8 @@ function listCreator(){
     let itemsArray = JSON.parse(localStorage.getItem('listArray'));
 
     let listItemContent = "";
-    for (item in itemsArray) {
+
+    for (item of itemsArray) {
         listItemContent +=
             '<div class="list-item">'+
             '<div data-item="'+item+'" title="Click for marking the task complete" class="list-item__content">'
