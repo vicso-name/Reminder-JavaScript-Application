@@ -164,6 +164,11 @@
     position: relative;
 }
 
+.list-item__content.completed {
+    background-color: green;
+    color: white; 
+}
+
 .list-item__content.active::before{
     content: "";
     position: absolute;

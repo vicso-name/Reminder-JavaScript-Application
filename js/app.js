@@ -1,87 +1,82 @@
-
 const addListBtn = document.getElementById('add_list');
 const clearList = document.getElementById('clear-list');
+const listWrapper = document.getElementById("list-item__wrapper");
 
-addListBtn.addEventListener('click', function(){
-    
-    const listArray = JSON.parse(localStorage.getItem('listArray')) || [];
-    const addListFieldValue = document.getElementById('add-list__field').value;    
-    const checkingMatches = JSON.parse(localStorage.getItem('listArray'));
+// Utility function to get or initialize the list from localStorage
+const getListArray = () => JSON.parse(localStorage.getItem('listArray')) || [];
 
-    if(checkingMatches !== null && checkingMatches.includes(addListFieldValue)){
-        alert("Come up with something original;")
-    }else{
+// Utility function to save the list back to localStorage
+const saveListArray = (listArray) => localStorage.setItem('listArray', JSON.stringify(listArray));
 
+// Add list item event
+addListBtn.addEventListener('click', () => {
+    const listArray = getListArray();
+    const addListFieldValue = document.getElementById('add-list__field').value.trim();
+
+    if (!addListFieldValue) {
+        alert("Please enter a value.");
+        return;
+    }
+
+    if (listArray.includes(addListFieldValue)) {
+        alert("Come up with something original!");
+    } else {
         listArray.push(addListFieldValue);
-        localStorage.setItem('listArray', JSON.stringify(listArray));
+        saveListArray(listArray);
         listCreator();        
     }
-
 });
 
+// Function to create list items in the DOM
+const listCreator = () => {
+    const itemsArray = getListArray();
+    listWrapper.innerHTML = ""; // Clear the list before recreating it
 
-function listCreator(){
+    itemsArray.forEach((item, index) => {
+        const listItem = document.createElement('div');
+        listItem.classList.add('list-item');
 
-    let itemsArray = JSON.parse(localStorage.getItem('listArray'));
+        const content = document.createElement('div');
+        content.classList.add('list-item__content');
+        content.setAttribute('data-item', index);
+        content.setAttribute('title', "Click for marking the task complete");
+        content.textContent = item;
 
-    let listItemContent = "";
+        const remover = document.createElement('div');
+        remover.classList.add('remover');
+        remover.setAttribute('title', "Remove this item");
+        remover.innerHTML = '<i class="far fa-trash-alt"></i>';
+        
+        listItem.appendChild(content);
+        listItem.appendChild(remover);
+        listWrapper.appendChild(listItem);
+    });
+};
 
-    for (item of itemsArray) {
-        listItemContent +=
-            '<div class="list-item">'+
-            '<div data-item="'+item+'" title="Click for marking the task complete" class="list-item__content">'
-            +itemsArray[item]+
-            '</div>'+
-            '<div title="Remove this item" class="remover">'+
-            '<i class="far fa-trash-alt"></i>'+
-            '</div>'+
-            '</div>'+
-            '</div>';
+// Load list on page load
+window.addEventListener('load', () => listCreator());
+
+// Clear the entire list
+clearList.addEventListener('click', () => {
+    localStorage.removeItem('listArray');
+    listWrapper.innerHTML = "";
+});
+
+// Event delegation for removing items
+listWrapper.addEventListener('click', (e) => {
+    if (e.target.closest('.remover')) {
+        const itemDiv = e.target.closest('.list-item');
+        const dataItemIndex = itemDiv.querySelector('.list-item__content').getAttribute('data-item');
+        const listArray = getListArray();
+        
+        listArray.splice(dataItemIndex, 1); // Remove the item from array
+        saveListArray(listArray);
+        listCreator(); // Rebuild the list
     }
-    document.getElementById("list-item__wrapper").innerHTML = listItemContent;
-}
 
-
-
-window.addEventListener('load', listCreator())
-
-
-/*** Clear List Button ***/
-
-clearList.addEventListener('click', function(){
-    localStorage.clear();
-    document.getElementById("list-item__wrapper").innerHTML = "";
+    // Handle marking item as complete
+    if (e.target.closest('.list-item__content')) {
+        const contentDiv = e.target.closest('.list-item__content');
+        contentDiv.classList.toggle('completed');
+    }
 });
-
-
-/*** Remove Item from List ***/
-
-    let removeItem = document.querySelectorAll('.remover');
-
-    removeItem.forEach(item=>{
-        item.addEventListener('click', function(){
-            this.closest('.list-item').remove();
-            let dataItem =  this.getAttribute('data-item');
-            let existingEntries = JSON.parse(localStorage.getItem('listArray'));
-            existingEntries.splice(dataItem, 1)
-            localStorage.setItem("listArray",JSON.stringify(existingEntries));
-            let completArray = JSON.parse(localStorage.getItem('completArray'));
-            completArray.splice(dataItem, 1)
-            localStorage.setItem("completArray",JSON.stringify(completArray));
-        });
-    
-    }); 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
